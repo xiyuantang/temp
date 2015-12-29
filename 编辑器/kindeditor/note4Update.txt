@@ -1,0 +1,19 @@
+kindeditor/kindeditor.js line 5819 - 5837:
+			/** deng add: plain text with img */
+			if (self.pasteType === 4) {
+				html = html.replace(/&nbsp;/ig, ' ');
+				html = html.replace(/\n\s*\n/g, '\n');
+				html = html.replace(/<br[^>]*>/ig, '\n');
+				html = html.replace(/<\/p><p[^>]*>/ig, '\n');
+				html = html.replace(/<(?!img)[^<]+>/g, '');
+				html = html.replace(/ {2}/g, ' &nbsp;');
+				if (self.newlineTag == 'p') {
+					if (/\n/.test(html)) {
+						html = html.replace(/^/, '<p>').replace(/$/, '<br /></p>').replace(/\n/g, '<br /></p><p>');
+					}
+				} else {
+					html = html.replace(/\n/g, '<br />$&');
+				}
+			}
+			/** deng add end */
+			

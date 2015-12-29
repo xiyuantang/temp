@@ -1,0 +1,17 @@
+label.error {
+	color: red;
+	padding-left: 10px;
+}
+div.error {
+    display: none;
+}
+
+input.error {
+    border: 1px dotted red;
+}
+
+#captcha-error,
+#captcha4email-error,
+#captcha4mobile-error {
+	padding-left: 90px;
+}

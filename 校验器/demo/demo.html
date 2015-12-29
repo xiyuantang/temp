@@ -1,0 +1,286 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script type="text/javascript" src="../js/jquery-1.8.3.js"></script>
+<script src="../js/jquery.validate.min.js" type="text/javascript"></script>
+</head>
+<body>
+<script type="text/javascript">
+$(function($) {
+	//例子1-基本validator的使用
+	var validConfig = {
+			ignore: "",
+			rules: {
+				art_title: {
+					required: true,
+				},
+				author_name: {
+					required: true,
+				},
+				cate_id: {
+					required: true,
+					min:0
+				},
+				art_weight: {
+					required: true,
+					digits: true,
+					min:0
+				},
+				art_content: {
+					editorContentNeed: editor,
+				},
+				status: {
+					required: true,
+				},
+			},
+			messages: {
+				art_title: {
+					required: "必须填写",
+				},
+				author_name: {
+					required: "必须填写",
+				},
+				cate_id: {
+					required: "必须选择",
+					min: "必须选择",
+				},
+				art_weight: {
+					required: "必须填写",
+					digits: "必须是数字",
+					min: "必须填写",
+				},
+				art_content: {
+					editorContentNeed: "必须填写",
+				},
+				status: {
+					required: "必须选择",
+				},
+			}
+		};
+		$("#formTemp1").validate(validConfig);
+		$(".submitBtn").click(function(){ 
+		 	var valid = $(this).parents('form').valid();
+			if(!valid){
+				return false;
+			}
+			$(this).parents('form').submit();
+		});
+
+    //例子2 - 注销validator对象
+	var validConfig = {
+		rules: {
+			invoice_type: {
+				required: true,
+				min: 0,
+			},
+			invoice_head: {
+				required: true,
+			},
+			amount: {
+				required: true,
+			},
+			province: {
+				required: true,
+			},
+			city: {
+				required: true,
+			},
+			address: {
+				required: true,
+			},
+			zipcode: {
+				required: true,
+			},
+			rece_username: {
+				required: true,
+			},
+			rece_mobile: {
+				required: true,
+			},
+			ship_type: {
+				required: true,
+				min: 0,
+			},
+			ship_fee_type: {
+				required: true,
+				min: 0,
+			},
+			id_no: {
+				required: true,
+			},
+			address: {
+				required: true,
+			},
+			telephone: {
+				required: true,
+			},
+			bank_name_and_no: {
+				required: true,
+			},
+			qua_cert: {
+				required: true,
+			},
+			reg_cert: {
+				required: true,
+			}
+		},
+		messages: {
+			invoice_type: {
+				required: "必须填写",
+				min: "必须填写",
+			},
+			invoice_head: {
+				required: "必须填写",
+			},
+			amount: {
+				required: "必须填写",
+			},
+			province: {
+				required: "必须填写",
+			},
+			city: {
+				required: "必须填写",
+			},
+			address: {
+				required: "必须填写",
+			},
+			zipcode: {
+				required: "必须填写",
+			},
+			rece_username: {
+				required: "必须填写",
+			},
+			rece_mobile: {
+				required: "必须填写",
+			},
+			ship_type: {
+				required: "必须填写",
+				min: "必须填写",
+			},
+			ship_fee_type: {
+				required: "必须填写",
+				min: "必须填写",
+			},
+			id_no: {
+				required: "必须填写",
+			},
+			address: {
+				required: "必须填写",
+			},
+			telephone: {
+				required: "必须填写",
+			},
+			bank_name_and_no: {
+				required: "必须填写",
+			},
+			qua_cert: {
+				required: "必须填写",
+			},
+			reg_cert: {
+				required: "必须填写",
+			}
+		}
+	};
+	$("#formTemp").validate(validConfig);
+	$(".submitBtn").click(function(){ 
+		var valid = $(this).parents('form').valid();
+		if(!valid){
+			return false;
+		}
+		$(this).parents('form').submit();
+	});
+
+	//修改发票类型
+	$('.js-invoice-type').change(function(){
+		var val  = $(this).children('option:selected').html();
+		var	node = $(this).parents('.table').next('.invoice-type-con');
+		var	txt  = $('#invoiceNode').html();
+		if(val == "增值税专用发票"){
+			if(!node.html()){
+				$(this).parents('.table').after(txt);
+				$('#file1,#file2').fileupload({
+					url: '/member/finance/invoicecreate.html',
+					dataType: 'json',
+					formData: {'is_upload':true},
+					done: function (e, data) {
+						var dataTemp = data.result;
+						var btn = e.target;
+						if(dataTemp.status==1){
+							var certCtxObj = $(btn).parents('.certCtx');
+							certCtxObj.find('.readCtx').attr('href',dataTemp.data);
+							certCtxObj.find('.readBtnCtx').show();
+							certCtxObj.find('.fileCtx').val(dataTemp.data);
+							certCtxObj.find('.uploadShowText').html('已上传');
+							console.log(dataTemp.data);
+						}
+						else{
+							alert(dataTemp.info);
+						}
+				    },
+				});
+				$("#formTemp").data('validator',false); //注销掉已经创建的validator对象
+				$("#formTemp").validate(validConfig); // 重新创建validator对象
+			}
+		}else{
+			$(this).parents('.table').next('.invoice-type-con').remove();
+		}
+		return false;
+	});
+	
+	//例子3 - 依赖校验
+	$("#formTemp").validate({
+		rules: {
+			domain_name: {
+				required: 'input[name="broker_type"][value="0"]:checked',
+			},
+			usefor: {
+				required: 'input[name="broker_type"][value="1"]:checked',
+			},
+			price: {
+				required: true,
+			},
+			realname: {
+				required: true,
+			},
+			agree_box: {
+				required: true,
+			},
+			mobile: {
+				required: true,
+			},
+		},
+		messages: {
+			domain_name: {
+				required: "域名必须填写",
+			},
+			usefor: {
+				required: "详细需求必须填写",
+			},
+			price: {
+				required: "报价必须填写",
+			},
+			realname: {
+				required: "联系人必须填写",
+			},
+			agree_box: {
+				required: "必须同意协议",
+			},
+			mobile: {
+				required: "手机号必须填写",
+			}
+		}
+	});
+
+	$(".submitBtn").click(function(){ 
+		var valid = $(this).parents('form').valid();
+		if(!valid){
+			return false;
+		}
+		$(this).parents('form').submit();
+	});
+
+});
+</script>
+</body>
+</html>
